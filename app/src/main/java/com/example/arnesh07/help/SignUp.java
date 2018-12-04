@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +30,7 @@ public class SignUp extends AppCompatActivity {
     EditText Password;
     EditText Name;
     EditText Contact;
-    Button SignUp;
+    Button SignUp,Login;
     private ProgressBar progressBar;
 
    String email, password, name, contact;
@@ -56,6 +57,7 @@ public class SignUp extends AppCompatActivity {
         Name =  findViewById(R.id.Name);
         Password =  findViewById(R.id.Password);
         SignUp=findViewById(R.id.SignUp);
+        Login=findViewById(R.id.Login);
         progressBar=findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
@@ -69,6 +71,13 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         };
+        Login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(v.getContext(),com.example.arnesh07.help.Login.class);
+                startActivity(i);
+            }
+        });
         SignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,8 +97,13 @@ public class SignUp extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(SignUp.this,"Check E-mail and Password",Toast.LENGTH_LONG).show();
+                                if(task.getException() instanceof FirebaseAuthUserCollisionException){
+                                    Toast.makeText(SignUp.this,"Already Registered",Toast.LENGTH_LONG).show();
+                                }
+                                else {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(SignUp.this, "Check E-mail and Password", Toast.LENGTH_LONG).show();
+                                }
                             }
                             else
                             {
