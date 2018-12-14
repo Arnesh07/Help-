@@ -50,7 +50,7 @@ public class Login extends AppCompatActivity {
                 password=password2.getText().toString().trim();
                 if(email.isEmpty() || password.isEmpty()){
                     mProgressBar.setVisibility(View.GONE);
-                    Toast.makeText(Login.this,"Fill fields properly",Toast.LENGTH_SHORT);
+                    Toast.makeText(Login.this,"Fill fields properly",Toast.LENGTH_SHORT).show();
                 }
                 else{
                     mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -65,7 +65,7 @@ public class Login extends AppCompatActivity {
                         }
                         else{
                             mProgressBar.setVisibility(View.GONE);
-                            Toast.makeText(Login.this,"Incorrect E-mail or Password",Toast.LENGTH_LONG);
+                            Toast.makeText(Login.this,"Incorrect E-mail or Password",Toast.LENGTH_LONG).show();
                         }
                         }
                     });

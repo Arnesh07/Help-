@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/signUpLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,49 +14,52 @@
         android:layout_marginTop="69dp"
         android:ems="10"
         android:hint="@string/enter_name"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
-        android:importantForAutofill="no" tools:targetApi="o" />
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_e_mail"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="134dp"
         android:ems="10"
+        android:hint="@string/enter_e_mail"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
-        android:importantForAutofill="no" tools:targetApi="o" />
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/Contact"
-        android:hint="@string/enter_contact_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/Name"
+        android:layout_alignLeft="@+id/Name"
         android:layout_alignParentTop="true"
         android:layout_marginTop="200dp"
         android:ems="10"
+        android:hint="@string/enter_contact_number"
+        android:importantForAutofill="no"
         android:inputType="phone"
-        android:layout_alignLeft="@+id/Name"
         tools:ignore="RtlCompat"
-        android:importantForAutofill="no" tools:targetApi="o" />
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/Password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/Name"
+        android:layout_alignLeft="@+id/Name"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="204dp"
         android:ems="10"
         android:hint="@string/enter_password"
         android:importantForAutofill="no"
         android:inputType="textPassword"
-        tools:targetApi="o"
-        android:layout_alignLeft="@+id/Name"
-        tools:ignore="RtlCompat" />
+        tools:ignore="RtlCompat"
+        tools:targetApi="o" />
 
     <Button
         android:id="@+id/SignUp"
@@ -89,5 +93,12 @@
         android:layout_marginLeft="92dp"
         android:layout_marginBottom="4dp"
         android:fadingEdge="horizontal|vertical"
-        android:text="Already Registed?Login" />
+        android:text="@string/already_registed_login" />
+
+    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/contain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="MergeRootFrame" />
+
 </RelativeLayout>
