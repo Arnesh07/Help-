@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener {
+public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener {
 
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
 
     signup signupFrag=new signup();
     login loginFrag=new login();
+    EmailInputFragment emailInputFragment=new EmailInputFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,10 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                                 if(task.isSuccessful()){
                                     progressBar.setVisibility(View.GONE);
                                     Toast.makeText(com.example.arnesh07.help.MainActivity.this,"Successful",Toast.LENGTH_SHORT).show();
+                                    fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction.replace(R.id.container,emailInputFragment);
+                                    fragmentTransaction.commit();
+
                                 }
                                 else{
                                     progressBar.setVisibility(View.GONE);
@@ -149,5 +154,24 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                 }
             });
         }
+    }
+
+    @Override
+    public void addEmails(final String Email1,final String Email2,final String Email3,final String Email4,final String Email5) {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference newRef = mRef.child("Users").child(userId);
+        newRef.child("Email-1").setValue(Email1);
+        newRef.child("Email-2").setValue(Email2);
+        newRef.child("Email-3").setValue(Email3);
+        newRef.child("Email-4").setValue(Email4);
+        newRef.child("Email-5").setValue(Email5).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(com.example.arnesh07.help.MainActivity.this,"Successful",Toast.LENGTH_SHORT).show();
+                //update UI
+
+            }
+        });
+
     }
 }
