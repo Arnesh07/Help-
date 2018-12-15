@@ -9,9 +9,9 @@
         android:id="@+id/Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/email"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="69dp"
+        android:layout_marginTop="93dp"
         android:ems="10"
         android:hint="@string/enter_name"
         android:importantForAutofill="no"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="134dp"
+        android:layout_marginTop="165dp"
         android:ems="10"
         android:hint="@string/enter_e_mail"
         android:importantForAutofill="no"
@@ -38,7 +38,9 @@
         android:layout_alignStart="@+id/Name"
         android:layout_alignLeft="@+id/Name"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="200dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="236dp"
         android:ems="10"
         android:hint="@string/enter_contact_number"
         android:importantForAutofill="no"
@@ -53,7 +55,9 @@
         android:layout_alignStart="@+id/Name"
         android:layout_alignLeft="@+id/Name"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="204dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="153dp"
         android:ems="10"
         android:hint="@string/enter_password"
         android:importantForAutofill="no"
@@ -70,7 +74,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="143dp"
         android:layout_marginLeft="143dp"
-        android:layout_marginBottom="130dp"
+        android:layout_marginBottom="85dp"
         android:text="@string/signup" />
 
     <ProgressBar
@@ -99,6 +103,10 @@
         android:id="@+id/contain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
         tools:ignore="MergeRootFrame" />
 
 </RelativeLayout>
