@@ -1,11 +1,18 @@
 package com.example.arnesh07.help;
 
+import android.app.AlarmManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.app.AlarmManagerCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -19,20 +26,26 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener {
+import java.util.Timer;
+import java.util.TimerTask;
 
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
-    FrameLayout container;
+public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener {
+
+     FragmentManager fragmentManager;
+     FragmentTransaction fragmentTransaction;
+     FrameLayout container;
 
      FirebaseAuth mAuth;
      FirebaseDatabase database;
      DatabaseReference mRef;
      FirebaseAuth.AuthStateListener authStateListener;
 
-    signup signupFrag=new signup();
-    login loginFrag=new login();
-    EmailInputFragment emailInputFragment=new EmailInputFragment();
+     signup signupFrag=new signup();
+     login loginFrag=new login();
+     EmailInputFragment emailInputFragment=new EmailInputFragment();
+     trackMeFrag trackMeFrag=new trackMeFrag();
+     DialogFragment timePickerFrag = new TimePickerFrag();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +57,10 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         container=findViewById(R.id.container);
 
         fragmentManager = getSupportFragmentManager();
+
         fragmentTransaction = fragmentManager.beginTransaction();
-
-
         fragmentTransaction.add(R.id.container,signupFrag);
         fragmentTransaction.commit();
-
 
     }
 
@@ -116,12 +127,37 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
 
     @Override
     public void checkUser() {
-        if(mAuth.getCurrentUser()!=null){
-            Toast.makeText(com.example.arnesh07.help.MainActivity.this,"Already Signed-In",Toast.LENGTH_LONG).show();
-            //update UI
+        mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser()==null){
+            Toast.makeText(MainActivity.this,"You need to Sign-In",Toast.LENGTH_LONG).show();
+            return;
+        }
+        else {
+            authStateListener = new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    if (firebaseAuth.getCurrentUser() != null) {
+                        //updateUI
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container, trackMeFrag);
+                        fragmentTransaction.commit();
+                        return;
+                    }
+                    else{
+                        Toast.makeText(MainActivity.this,"You need to Sign-In",Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+            };
+        }
+        Toast.makeText(MainActivity.this,"Already Signed In",Toast.LENGTH_LONG).show();
+        //updateUI
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, trackMeFrag);
+        fragmentTransaction.commit();
+
 
         }
-    }
 
     @Override
     public void goToSignUp() {
@@ -143,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                     if(task.isSuccessful()){
                         mProgressBar.setVisibility(View.GONE);
                         Toast.makeText(MainActivity.this,"Successful",Toast.LENGTH_LONG).show();
-                        //  Intent i3=new Intent(v.getContext(),TrackMe.class);
-                        // i3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        // startActivity(i3);
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container,trackMeFrag);
+                        fragmentTransaction.commit();
                     }
                     else{
                         mProgressBar.setVisibility(View.GONE);
@@ -169,9 +205,46 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(com.example.arnesh07.help.MainActivity.this,"Successful",Toast.LENGTH_SHORT).show();
                 //update UI
-
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.container,trackMeFrag);
+                fragmentTransaction.commit();
             }
         });
 
+    }
+
+    @Override
+    public void callTimePicker() {
+        timePickerFrag.show(fragmentManager,"TimePickerFrag");
+
+
+    }
+
+    @Override
+    public void startCountdown(int secondsRemaining) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // this code will be executed after time difference between current and user picked time.
+                Log.v("Timer","executed");
+                // Get a handler that can be used to post to the main thread
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        makeAToast();
+                        //Timer Completed.Make Changes...
+
+
+                    }
+                };
+                mainHandler.post(myRunnable);
+            }
+        }, secondsRemaining*1000);
+    }
+    
+    public void makeAToast(){
+        Toast.makeText(MainActivity.this,"Timer Completed",Toast.LENGTH_SHORT).show();
     }
 }

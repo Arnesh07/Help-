@@ -28,6 +28,16 @@
     <string name="input_email3">Enter E-mail 3</string>
     <string name="input_email2">Enter E-mail 2</string>
     <string name="input_email1">Enter E-mail 1</string>
-    <string name="proceed">Proceed</string>
     <string name="already_registed_login">Already Registed?Login</string>
+    <string name="proceed">Proceed</string>
+    <string name="track_me">Track Me!</string>
+    <string name="profile">Profile</string>
+    <string name="sign_out">Sign-Out</string>
+    <string name="when_should_we_stop_tracking_you">When Should We Stop Tracking You?</string>
+    <string name="type_in_time">Type in Time</string>
+    <string name="colon">:</string>
+    <string name="_12">12</string>
+    <string name="_53">53</string>
+    <string name="pm">PM</string>
+    <string name="am">AM</string>
 </resources>

@@ -54,6 +54,7 @@ public class signup extends Fragment {
         progressBar=view.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
+        caller.checkUser();
         SignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
