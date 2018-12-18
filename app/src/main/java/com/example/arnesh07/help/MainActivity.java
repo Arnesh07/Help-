@@ -1,14 +1,30 @@
 package com.example.arnesh07.help;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlarmManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.AlarmManagerCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,7 +34,18 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,23 +56,55 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener {
+public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener , LocationTrackFrag.LocationTrackFragListener {
 
      FragmentManager fragmentManager;
      FragmentTransaction fragmentTransaction;
      FrameLayout container;
 
-     FirebaseAuth mAuth;
+    private FusedLocationProviderClient mFusedLocationClient;
+    LocationRequest mLocationRequest;
+    LocationCallback mLocationCallback=new LocationCallback();
+    LocationTrackingService mService=null;
+    boolean mBound = false;
+
+
+    FirebaseAuth mAuth;
      FirebaseDatabase database;
      DatabaseReference mRef;
      FirebaseAuth.AuthStateListener authStateListener;
+
+    // Used in checking for runtime permissions.
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+
+    // The BroadcastReceiver used to listen from broadcasts from the service.
+    MyReceiver myReceiver;
 
      signup signupFrag=new signup();
      login loginFrag=new login();
      EmailInputFragment emailInputFragment=new EmailInputFragment();
      trackMeFrag trackMeFrag=new trackMeFrag();
      DialogFragment timePickerFrag = new TimePickerFrag();
+     LocationTrackFrag LocationTrackFrag=new LocationTrackFrag();
 
+     final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION=101;
+    final int MY_PERMISSIONS_REQUEST_INTERNET=102;
+
+    final ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LocationTrackingService.LocalBinder binder = (LocationTrackingService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mService = null;
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +121,42 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         fragmentTransaction.add(R.id.container,signupFrag);
         fragmentTransaction.commit();
 
+        myReceiver = new MyReceiver();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to the service. If the service is in foreground mode, this signals to the service
+        // that since this activity is in the foreground, the service can exit foreground mode.
+        bindService(new Intent(this, LocationTrackingService.class), mServiceConnection,
+                Context.BIND_AUTO_CREATE);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+                new IntentFilter(LocationTrackingService.ACTION_BROADCAST));
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+        mService.stopForeground(true);
+        mService.removeLocationUpdates();
+        mService.stopSelf();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        if (mBound) {
+            // Unbind from the service. This signals to the service that this activity is no longer
+            // in the foreground, and the service can respond by promoting itself to a foreground
+            // service.
+            unbindService(mServiceConnection);
+            mBound = false;
+        }
+
+        super.onStop();
     }
 
     @Override
@@ -225,26 +320,123 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                // this code will be executed after time difference between current and user picked time.
+                // this code will be executed after timer is completed.
                 Log.v("Timer","executed");
-                // Get a handler that can be used to post to the main thread
+                // A handler that can be used to post to the main thread
                 Handler mainHandler = new Handler(Looper.getMainLooper());
 
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
                         makeAToast();
-                        //Timer Completed.Make Changes...
-
-
+                        mService.removeLocationUpdates();
+                        unbindService(mServiceConnection);
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container,trackMeFrag);
+                        fragmentTransaction.commit();
                     }
                 };
                 mainHandler.post(myRunnable);
             }
         }, secondsRemaining*1000);
     }
-    
+
     public void makeAToast(){
         Toast.makeText(MainActivity.this,"Timer Completed",Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void goToHelp() {
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container,LocationTrackFrag)
+               // .addToBackStack(null)
+                .commit();
+    }
+
+    @Override  @TargetApi(26)
+    public void getLocation() {
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
+
+        }
+        if(ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+
+
+            mService.requestLocationUpdates();
+
+            //Calling service to request location updates.
+        }
+
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.INTERNET},
+                    MY_PERMISSIONS_REQUEST_INTERNET);
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted.
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(MainActivity.this,"Please Grant Permission",Toast.LENGTH_LONG);
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+            case MY_PERMISSIONS_REQUEST_INTERNET: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(MainActivity.this,"Please Grant Permission",Toast.LENGTH_LONG);
+                }
+                return;
+            }
+        }
+    }
+
+
+    public class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Location location = intent.getParcelableExtra(LocationTrackingService.EXTRA_LOCATION);
+            if (location != null) {
+                //Toast.makeText(MainActivity.this, Utils.getLocationText(location),
+                     //   Toast.LENGTH_SHORT).show();
+
+                Log.v("Latitude",Double.toString(location.getLatitude()));
+                Log.v("Longitude",Double.toString(location.getLongitude()));
+            }
+        }
+    }
+
 }

@@ -23,6 +23,8 @@ public class TimePickerFrag extends DialogFragment implements TimePickerDialog.O
 
     public interface timePickerListener{
        void startCountdown(int secondsRemaining);
+       void goToHelp();
+       void getLocation();
     }
     @Override
     public void onAttach(Context context) {
@@ -104,6 +106,9 @@ public class TimePickerFrag extends DialogFragment implements TimePickerDialog.O
             }
         }
         caller.startCountdown(secondsRemaining);
+        //Now location services will start and the user will be tracked.
+        caller.getLocation();
+        caller.goToHelp();
         Log.v("Seconds",Integer.toString(secondsRemaining));
     }
 }

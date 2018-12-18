@@ -40,4 +40,6 @@
     <string name="_53">53</string>
     <string name="pm">PM</string>
     <string name="am">AM</string>
+    <string name="stop">Stop</string>
+    <string name="help">HELP!</string>
 </resources>
