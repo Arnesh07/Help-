@@ -50,13 +50,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener , LocationTrackFrag.LocationTrackFragListener {
+public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener , LocationTrackFrag.LocationTrackFragListener  {
 
      FragmentManager fragmentManager;
      FragmentTransaction fragmentTransaction;
@@ -67,12 +71,23 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     LocationCallback mLocationCallback=new LocationCallback();
     LocationTrackingService mService=null;
     boolean mBound = false;
-
+     String token;
 
     FirebaseAuth mAuth;
      FirebaseDatabase database;
      DatabaseReference mRef;
      FirebaseAuth.AuthStateListener authStateListener;
+     public static String myEmail ;
+     public static int count=0;
+     public String latitude;
+     public String longitude;
+     public static String email1;
+     public static String email2;
+     public static String email3;
+     public static String email4;
+     public static String email5;
+
+
 
     // Used in checking for runtime permissions.
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -168,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         }
         else
         {
+            myEmail=Email;
             progressBar.setVisibility(View.VISIBLE);
             mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(com.example.arnesh07.help.MainActivity.this, new OnCompleteListener<AuthResult>() {
                 @Override
@@ -289,17 +305,27 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
 
     @Override
     public void addEmails(final String Email1,final String Email2,final String Email3,final String Email4,final String Email5) {
+        email1=Email1;
+        email2=Email2;
+        email3=Email3;
+        email4=Email4;
+        email5=Email5;
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference newRef = mRef.child("Users").child(userId);
-        newRef.child("Email-1").setValue(Email1);
-        newRef.child("Email-2").setValue(Email2);
-        newRef.child("Email-3").setValue(Email3);
-        newRef.child("Email-4").setValue(Email4);
-        newRef.child("Email-5").setValue(Email5).addOnCompleteListener(new OnCompleteListener<Void>() {
+        newRef.child("email1").setValue(Email1);
+        newRef.child("email2").setValue(Email2);
+        newRef.child("email3").setValue(Email3);
+        newRef.child("email4").setValue(Email4);
+        newRef.child("email5").setValue(Email5).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(com.example.arnesh07.help.MainActivity.this,"Successful",Toast.LENGTH_SHORT).show();
                 //update UI
+                token=FirebaseInstanceId.getInstance().getToken();
+                final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                mRef.child("Users").child(userId).child("token").setValue(token);
+
+
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.container,trackMeFrag);
                 fragmentTransaction.commit();
@@ -353,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                 .commit();
     }
 
-    @Override  @TargetApi(26)
+    @Override  //@TargetApi(26)
     public void getLocation() {
 
         if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -367,14 +393,9 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         if(ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED){
-
-
             mService.requestLocationUpdates();
-
             //Calling service to request location updates.
         }
-
-
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.INTERNET)
                 != PackageManager.PERMISSION_GRANTED){
@@ -382,8 +403,6 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                     new String[]{Manifest.permission.INTERNET},
                     MY_PERMISSIONS_REQUEST_INTERNET);
         }
-
-
     }
 
     @Override
@@ -432,11 +451,61 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
             if (location != null) {
                 //Toast.makeText(MainActivity.this, Utils.getLocationText(location),
                      //   Toast.LENGTH_SHORT).show();
-
+                latitude=Double.toString(location.getLatitude());
+                longitude=Double.toString(location.getLongitude());
+              // mRef.child("Users").child(userId).child("latitude").setValue(Double.toString(location.getLatitude()));
+               // mRef.child("Users").child(userId).child("longitude").setValue(Double.toString(location.getLongitude()));
                 Log.v("Latitude",Double.toString(location.getLatitude()));
                 Log.v("Longitude",Double.toString(location.getLongitude()));
             }
         }
     }
 
+    @Override
+    public void sendHelp() {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //Log.v("EMAIL1234","HELLO");
+        FirebaseDatabase.getInstance().getReference().child("Users")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            User2 user = snapshot.getValue(User2.class);
+                            //System.out.println(user.email);
+                            Log.v("EmailFound",user.email);
+                            Log.v("tokenFound",user.token);
+                            Log.v("email1",email1==null?"":email1);
+                            if(user.email.equals(email1)||user.email.equals(email2)||user.email.equals(email3)||user.email.equals(email4)||user.email.equals(email5)){
+                                Log.v("email","matched");
+                                if(count==0) {
+                                    mRef.child("Users").child(userId).child("token1").setValue(user.token);
+                                    count++;
+                                }
+                                if(count==1) {
+                                    mRef.child("Users").child(userId).child("token2").setValue(user.token);
+                                    count++;
+                                }
+                                if(count==2) {
+                                    mRef.child("Users").child(userId).child("token3").setValue(user.token);
+                                    count++;
+                                }
+                                if(count==3) {
+                                    mRef.child("Users").child(userId).child("token4").setValue(user.token);
+                                    count++;
+                                }
+                                if(count==4) {
+                                    mRef.child("Users").child(userId).child("token5").setValue(user.token);
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.v("Error","Error");
+                    }
+                });
+        mRef.child("Users").child(userId).child("latitude").setValue(latitude);
+        mRef.child("Users").child(userId).child("longitude").setValue(longitude);
+    }
 }

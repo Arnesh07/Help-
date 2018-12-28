@@ -28,7 +28,7 @@
     <string name="input_email3">Enter E-mail 3</string>
     <string name="input_email2">Enter E-mail 2</string>
     <string name="input_email1">Enter E-mail 1</string>
-    <string name="already_registed_login">Already Registed?Login</string>
+    <string name="already_registed_login">Already Registered?Login</string>
     <string name="proceed">Proceed</string>
     <string name="track_me">Track Me!</string>
     <string name="profile">Profile</string>
