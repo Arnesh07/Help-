@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
         android:width="200dp"
         android:autoSizeTextType="uniform"
         android:gravity="center_horizontal"
@@ -18,95 +19,111 @@
         android:textAllCaps="false"
         android:textSize="20sp"
         android:textStyle="bold"
-        tools:targetApi="o"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.451"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.073"
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/inputEmail1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:width="200dp"
         android:hint="@string/input_email1"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
-        tools:targetApi="o"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/enterEmailMessage"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.28"
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/inputEmail2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:width="200dp"
         android:hint="@string/input_email2"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
-        tools:targetApi="o"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputEmail1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/inputEmail3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="240dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:width="200dp"
         android:hint="@string/input_email3"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
-        tools:targetApi="o"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputEmail2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.521"
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/inputEmail4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:width="200dp"
         android:hint="@string/input_email4"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
-        tools:targetApi="o"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputEmail3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.659"
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/inputEmail5"
         android:layout_width="wrap_content"
         android:layout_height="47dp"
-        android:layout_marginTop="360dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:width="200dp"
         android:hint="@string/input_email5"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputEmail4"
         app:layout_constraintTop_toTopOf="parent"
-        tools:targetApi="o"
-        android:importantForAutofill="no" />
+        app:layout_constraintVertical_bias="0.792"
+        tools:targetApi="o" />
 
     <Button
         android:id="@+id/proceed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="39dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/signup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.948" />
 
 
 </android.support.constraint.ConstraintLayout>

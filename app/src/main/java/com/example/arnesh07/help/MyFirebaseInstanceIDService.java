@@ -11,12 +11,17 @@ import com.example.arnesh07.help.MainActivity;
 
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     DatabaseReference mRef;
+    FirebaseAuth mAuth;
 
     @Override
     public void onTokenRefresh() {
         super.onTokenRefresh();
         String refreshedToken=FirebaseInstanceId.getInstance().getToken();
         mRef= FirebaseDatabase.getInstance().getReference();
+        mAuth=FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser()==null){
+            return;
+        }
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
        mRef.child("Users").child(userId).child("token").setValue(refreshedToken);
 

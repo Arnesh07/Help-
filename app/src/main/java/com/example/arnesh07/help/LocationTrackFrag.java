@@ -45,6 +45,12 @@ public class LocationTrackFrag extends Fragment {
               caller.sendHelp();
              }
          });
+         stop.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+
+             }
+         });
 
         return v;
     }

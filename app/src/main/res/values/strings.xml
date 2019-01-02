@@ -42,4 +42,5 @@
     <string name="am">AM</string>
     <string name="stop">Stop</string>
     <string name="help">HELP!</string>
+    <string name="todo">TODO</string>
 </resources>

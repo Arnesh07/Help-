@@ -16,6 +16,7 @@ public class trackMeFrag extends Fragment {
 
     public interface trackMeListener{
         void callTimePicker();
+        void signOut();
     }
     @Override
     public void onAttach(Context context) {
@@ -27,12 +28,14 @@ public class trackMeFrag extends Fragment {
     }
 
     Button trackMe;
+    Button signOut;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.trackme,container,false);
 
         trackMe=v.findViewById(R.id.trackMe);
+        signOut=v.findViewById(R.id.signOut);
 
         trackMe.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +43,12 @@ public class trackMeFrag extends Fragment {
                 caller.callTimePicker();
             }
         });
-
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                caller.signOut();
+            }
+        });
         return v;
     }
 }

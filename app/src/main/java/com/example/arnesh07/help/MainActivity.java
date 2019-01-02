@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     private FusedLocationProviderClient mFusedLocationClient;
     LocationRequest mLocationRequest;
     LocationCallback mLocationCallback=new LocationCallback();
-    LocationTrackingService mService=null;
+    LocationTrackingService mService;
     boolean mBound = false;
      String token;
 
@@ -81,13 +81,12 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
      public static int count=0;
      public String latitude;
      public String longitude;
-     public static String email1;
-     public static String email2;
-     public static String email3;
-     public static String email4;
-     public static String email5;
-
-
+     public String email1;
+     public String email2;
+     public String email3;
+     public String email4;
+     public String email5;
+    UserEmails userEmails=new UserEmails();
 
     // Used in checking for runtime permissions.
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -179,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
 
         if(TextUtils.isEmpty(Email) || TextUtils.isEmpty(Password) || TextUtils.isEmpty(Contact) || TextUtils.isEmpty(Name))
         {
-            Toast.makeText(MainActivity.this, "Fill All Fields!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Fill All Fields!", Toast.LENGTH_SHORT).show();
         }
         else
         {
@@ -191,11 +190,11 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                     if (!task.isSuccessful()) {
                         if(task.getException() instanceof FirebaseAuthUserCollisionException){
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(MainActivity.this,"Already Registered",Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this,"Already Registered",Toast.LENGTH_SHORT).show();
                         }
                         else {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(MainActivity.this, "Check E-mail and Password", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Check E-mail and Password", Toast.LENGTH_SHORT).show();
                         }
                     }
                     else
@@ -240,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     public void checkUser() {
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser()==null){
-            Toast.makeText(MainActivity.this,"You need to Sign-In",Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this,"You need to Sign-In",Toast.LENGTH_SHORT).show();
             return;
         }
         else {
@@ -255,13 +254,13 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                         return;
                     }
                     else{
-                        Toast.makeText(MainActivity.this,"You need to Sign-In",Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"You need to Sign-In",Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
             };
         }
-        Toast.makeText(MainActivity.this,"Already Signed In",Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this,"Already Signed In",Toast.LENGTH_SHORT).show();
         //updateUI
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.container, trackMeFrag);
@@ -289,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
                         mProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(MainActivity.this,"Successful",Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"Successful",Toast.LENGTH_SHORT).show();
                         fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.container,trackMeFrag);
                         fragmentTransaction.commit();
@@ -310,6 +309,14 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         email3=Email3;
         email4=Email4;
         email5=Email5;
+       // UserEmails userEmails=new UserEmails(Email1,Email2,Email3,Email4,Email5);
+        userEmails.setEmail1(Email1);
+        userEmails.setEmail2(Email2);
+        userEmails.setEmail3(Email3);
+        userEmails.setEmail4(Email4);
+        userEmails.setEmail5(Email5);
+
+        //Log.v("addEmailsCheck",email1);
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference newRef = mRef.child("Users").child(userId);
         newRef.child("email1").setValue(Email1);
@@ -324,7 +331,47 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                 token=FirebaseInstanceId.getInstance().getToken();
                 final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 mRef.child("Users").child(userId).child("token").setValue(token);
-
+                count=0;
+                FirebaseDatabase.getInstance().getReference().child("Users")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    User2 user = snapshot.getValue(User2.class);
+                                    //System.out.println(user.email);
+                                    Log.v("EmailFound",user.email);
+                                    Log.v("tokenFound",user.token);
+                                    Log.v("email1",userEmails.getEmail1());
+                                    if(user.email.equals(email1)||user.email.equals(email2)||user.email.equals(email3)||user.email.equals(email4)||user.email.equals(email5)){
+                                        Log.v("email","matched");
+                                        if(count==0) {
+                                            mRef.child("Users").child(userId).child("token1").setValue(user.token);
+                                            count++;
+                                        }
+                                        else if(count==1) {
+                                            mRef.child("Users").child(userId).child("token2").setValue(user.token);
+                                            count++;
+                                        }
+                                        else if(count==2) {
+                                            mRef.child("Users").child(userId).child("token3").setValue(user.token);
+                                            count++;
+                                        }
+                                        else if(count==3) {
+                                            mRef.child("Users").child(userId).child("token4").setValue(user.token);
+                                            count++;
+                                        }
+                                        else if(count==4) {
+                                            mRef.child("Users").child(userId).child("token5").setValue(user.token);
+                                            count++;
+                                        }
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.v("Error","Error");
+                            }
+                        });
 
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.container,trackMeFrag);
@@ -465,6 +512,9 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     public void sendHelp() {
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //Log.v("EMAIL1234","HELLO");
+        //userEmails.getEmail1();
+        //Log.v("Jadoo",userEmails.getEmail1());
+       /* count=0;
         FirebaseDatabase.getInstance().getReference().child("Users")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -474,26 +524,26 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                             //System.out.println(user.email);
                             Log.v("EmailFound",user.email);
                             Log.v("tokenFound",user.token);
-                            Log.v("email1",email1==null?"":email1);
+                            Log.v("email1",userEmails.getEmail1());
                             if(user.email.equals(email1)||user.email.equals(email2)||user.email.equals(email3)||user.email.equals(email4)||user.email.equals(email5)){
                                 Log.v("email","matched");
                                 if(count==0) {
                                     mRef.child("Users").child(userId).child("token1").setValue(user.token);
                                     count++;
                                 }
-                                if(count==1) {
+                                else if(count==1) {
                                     mRef.child("Users").child(userId).child("token2").setValue(user.token);
                                     count++;
                                 }
-                                if(count==2) {
+                                else if(count==2) {
                                     mRef.child("Users").child(userId).child("token3").setValue(user.token);
                                     count++;
                                 }
-                                if(count==3) {
+                                else if(count==3) {
                                     mRef.child("Users").child(userId).child("token4").setValue(user.token);
                                     count++;
                                 }
-                                if(count==4) {
+                                else if(count==4) {
                                     mRef.child("Users").child(userId).child("token5").setValue(user.token);
                                     count++;
                                 }
@@ -504,8 +554,17 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                     public void onCancelled(DatabaseError databaseError) {
                         Log.v("Error","Error");
                     }
-                });
+                });*/
         mRef.child("Users").child(userId).child("latitude").setValue(latitude);
         mRef.child("Users").child(userId).child("longitude").setValue(longitude);
+    }
+
+    @Override
+    public void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container,signupFrag);
+        fragmentTransaction.commit();
+
     }
 }

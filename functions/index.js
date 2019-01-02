@@ -58,8 +58,8 @@ return null;
       let payload = {
       data: {
       name : change.after.val().name,
-      latitude : change.after.val().latitude,
-      longitude : change.after.val().longitude
+      latitude : change.after.val().latitude.toString(),
+      longitude : change.after.val().longitude.toString()
     }
   };
   let count=0;
@@ -67,6 +67,12 @@ return null;
   tokens[count]=change.after.val().token1;
   console.log("Registration Token: "+tokens[count]);
   count++;
+}
+/*if(change.after.token2.exists()){
+	console.log("BADOOM");
+}
+else{
+	console.log("BILBUL");
 }
 if(change.after.val().token2!==null){
   tokens[count]=change.after.val().token2;
@@ -87,25 +93,21 @@ if(change.after.val().token5!==null){
   tokens[count]=change.after.val().token5;
   console.log("Registration Token: "+tokens[count]);
   count++;
-}
+}*/
 //const response = await admin.messaging().sendToDevice(tokens, payload);
-admin.messaging.sendToDevice(tokens,payload)
-.then(function(response){
-	console.log("Successfully sent message: ",response);
-	return null;
-})
-.catch(function(error){
-	console.log("Error sending message: ",error);
+return admin.messaging().sendToDevice(tokens,payload)
+      .catch(function (error) {
+         console.log("Error sending message: ", error);
+      })
+  });
 
-})
      // console.log('Uppercasing', context.params.pushId, original);
       //const uppercase = original.toUpperCase();
       //console.log("It is able to read latitude " + latitude);
       // You must return a Promise when performing asynchronous tasks inside a Functions such as
       // writing to the Firebase Realtime Database.
       // Setting an "uppercase" sibling in the Realtime Database returns a Promise.
-      return null;
-}); 
+      
 
   /*  exports.sendNotification = functions.database.ref('/Users{userId}/latitude')
 .onWrite((change,context) => { 
