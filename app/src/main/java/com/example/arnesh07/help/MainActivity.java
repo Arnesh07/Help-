@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        email1=null;
         mAuth = FirebaseAuth.getInstance();
         mRef= FirebaseDatabase.getInstance().getReference();
         container=findViewById(R.id.container);
@@ -310,11 +310,12 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         email4=Email4;
         email5=Email5;
        // UserEmails userEmails=new UserEmails(Email1,Email2,Email3,Email4,Email5);
-        userEmails.setEmail1(Email1);
+      /*  userEmails.setEmail1(Email1);
         userEmails.setEmail2(Email2);
         userEmails.setEmail3(Email3);
         userEmails.setEmail4(Email4);
-        userEmails.setEmail5(Email5);
+        userEmails.setEmail5(Email5);  */
+       // ((UserEmails)getApplication()).setEmail1(email1);
 
         //Log.v("addEmailsCheck",email1);
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -341,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                                     //System.out.println(user.email);
                                     Log.v("EmailFound",user.email);
                                     Log.v("tokenFound",user.token);
-                                    Log.v("email1",userEmails.getEmail1());
+                                   // Log.v("email1",userEmails.getEmail1());
                                     if(user.email.equals(email1)||user.email.equals(email2)||user.email.equals(email3)||user.email.equals(email4)||user.email.equals(email5)){
                                         Log.v("email","matched");
                                         if(count==0) {
@@ -511,10 +512,8 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     @Override
     public void sendHelp() {
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //Log.v("EMAIL1234","HELLO");
-        //userEmails.getEmail1();
-        //Log.v("Jadoo",userEmails.getEmail1());
-       /* count=0;
+         //Log.v("EMAIL1234",((UserEmails)getApplication()).getEmail1());
+        /* count=0;
         FirebaseDatabase.getInstance().getReference().child("Users")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -555,8 +554,10 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                         Log.v("Error","Error");
                     }
                 });*/
+
         mRef.child("Users").child(userId).child("latitude").setValue(latitude);
         mRef.child("Users").child(userId).child("longitude").setValue(longitude);
+
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.example.arnesh07.help;
 
-public class UserEmails {
+import android.app.Application;
+
+public class UserEmails  {
     String email1,email2,email3,email4,email5;
 
     public UserEmails(String email1, String email2, String email3, String email4, String email5) {

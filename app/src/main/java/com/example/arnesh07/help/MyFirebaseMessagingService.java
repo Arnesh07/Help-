@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -22,6 +23,7 @@ public String ID="Channel ID";
         super.onMessageReceived(remoteMessage);
 
         //send notification.
+        Log.v("FCMMessage","Received");
         Map<String,String> payload=remoteMessage.getData();
         sendNotification(payload);
 
@@ -30,17 +32,22 @@ public String ID="Channel ID";
     public void sendNotification(Map<String,String> payload){
         String latitude=payload.get("latitude");
         String longitude=payload.get("longitude");
-        Uri gmmIntentUri = Uri.parse("geo:latitude,longitude?z=12");
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        String message=payload.get("name")  +" is there!Reach to him now!";
+        Log.v("LatInPayload",latitude);
+        Log.v("LongInPayload",longitude);
+        //Uri gmmIntentUri = Uri.parse("geo:20.175227,72.8647202");
+        String geoUri = "http://maps.google.com/maps?q=loc:" + latitude + "," + longitude + " (" + message + ")";
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
         mapIntent.setPackage("com.google.android.apps.maps");
 
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, mapIntent, 0);
         createNotificationChannel();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, ID)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.mipmap.help_round)
                 .setContentTitle("Help!")
-                .setContentText(payload.get("name") + " is in need of help! Click Now!")
+                .setContentText(payload.get("name") + " is in need of help!Help Now!")
+                .setBadgeIconType(R.mipmap.help_round)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 // Set the intent that will fire when the user taps the notification
                 .setContentIntent(pendingIntent);
