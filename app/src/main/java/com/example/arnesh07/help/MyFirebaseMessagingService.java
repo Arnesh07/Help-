@@ -3,7 +3,9 @@ package com.example.arnesh07.help;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -32,7 +34,7 @@ public String ID="Channel ID";
     public void sendNotification(Map<String,String> payload){
         String latitude=payload.get("latitude");
         String longitude=payload.get("longitude");
-        String message=payload.get("name")  +" is there!Reach to him now!";
+        String message=payload.get("name")  +" is here! Reach to him now!";
         Log.v("LatInPayload",latitude);
         Log.v("LongInPayload",longitude);
         //Uri gmmIntentUri = Uri.parse("geo:20.175227,72.8647202");
@@ -49,6 +51,8 @@ public String ID="Channel ID";
                 .setContentText(payload.get("name") + " is in need of help!Help Now!")
                 .setBadgeIconType(R.mipmap.help_round)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(),
+                        R.mipmap.help_round))
                 // Set the intent that will fire when the user taps the notification
                 .setContentIntent(pendingIntent);
 

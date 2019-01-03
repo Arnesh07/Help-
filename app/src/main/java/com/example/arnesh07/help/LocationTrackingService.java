@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
@@ -211,6 +212,8 @@ public class LocationTrackingService extends IntentService {
                 .setContentTitle("Help")
                 .setContentText("We are tracking you.Be assured, you are safe.")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setLargeIcon(BitmapFactory.decodeResource(getApplication().getResources(),
+                        R.mipmap.help_round))
                 .build();
          return mBuilder;
     }

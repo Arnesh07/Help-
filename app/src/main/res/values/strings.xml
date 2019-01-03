@@ -43,4 +43,5 @@
     <string name="stop">Stop</string>
     <string name="help">HELP!</string>
     <string name="todo">TODO</string>
+    <string name="hello">Hello</string>
 </resources>

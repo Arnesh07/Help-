@@ -20,6 +20,7 @@ public class LocationTrackFrag extends Fragment {
     LocationTrackFragListener caller;
     public interface LocationTrackFragListener{
     void sendHelp();
+    void stopTrack();
     }
 
     @Override
@@ -48,7 +49,7 @@ public class LocationTrackFrag extends Fragment {
          stop.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-
+                caller.stopTrack();
              }
          });
 

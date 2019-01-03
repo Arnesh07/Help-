@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Handler;
@@ -60,7 +61,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener , LocationTrackFrag.LocationTrackFragListener  {
+public class MainActivity extends AppCompatActivity implements signup.signUpListener , login.loginListener , EmailInputFragment.EmailInputFragmentListener , trackMeFrag.trackMeListener ,TimePickerFrag.timePickerListener , LocationTrackFrag.LocationTrackFragListener ,profileFrag.profileListener {
 
      FragmentManager fragmentManager;
      FragmentTransaction fragmentTransaction;
@@ -86,7 +87,8 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
      public String email3;
      public String email4;
      public String email5;
-    UserEmails userEmails=new UserEmails();
+     // UserEmails userEmails=new UserEmails();
+
 
     // Used in checking for runtime permissions.
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
      trackMeFrag trackMeFrag=new trackMeFrag();
      DialogFragment timePickerFrag = new TimePickerFrag();
      LocationTrackFrag LocationTrackFrag=new LocationTrackFrag();
+     profileFrag profileFrag=new profileFrag();
 
      final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION=101;
     final int MY_PERMISSIONS_REQUEST_INTERNET=102;
@@ -136,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         fragmentTransaction.commit();
 
         myReceiver = new MyReceiver();
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("emails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
 
     }
 
@@ -309,13 +314,14 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         email3=Email3;
         email4=Email4;
         email5=Email5;
-       // UserEmails userEmails=new UserEmails(Email1,Email2,Email3,Email4,Email5);
-      /*  userEmails.setEmail1(Email1);
-        userEmails.setEmail2(Email2);
-        userEmails.setEmail3(Email3);
-        userEmails.setEmail4(Email4);
-        userEmails.setEmail5(Email5);  */
-       // ((UserEmails)getApplication()).setEmail1(email1);
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("emails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("Email1", email1);
+        editor.putString("Email2", email2);
+        editor.putString("Email3", email3);
+        editor.putString("Email4", email4);
+        editor.putString("Email5", email5);
+        editor.commit();
 
         //Log.v("addEmailsCheck",email1);
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -333,6 +339,11 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                 final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 mRef.child("Users").child(userId).child("token").setValue(token);
                 count=0;
+                mRef.child("Users").child(userId).child("token1").setValue("0");
+                mRef.child("Users").child(userId).child("token2").setValue("0");
+                mRef.child("Users").child(userId).child("token3").setValue("0");
+                mRef.child("Users").child(userId).child("token4").setValue("0");
+                mRef.child("Users").child(userId).child("token5").setValue("0");
                 FirebaseDatabase.getInstance().getReference().child("Users")
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -505,6 +516,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                // mRef.child("Users").child(userId).child("longitude").setValue(Double.toString(location.getLongitude()));
                 Log.v("Latitude",Double.toString(location.getLatitude()));
                 Log.v("Longitude",Double.toString(location.getLongitude()));
+//                Log.v("EMAIL!@#",email1);
             }
         }
     }
@@ -513,7 +525,10 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
     public void sendHelp() {
         final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
          //Log.v("EMAIL1234",((UserEmails)getApplication()).getEmail1());
-        /* count=0;
+        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("emails",Context.MODE_PRIVATE);
+        String email11 = sharedPref.getString("Email1",null);
+        Log.v("EMAIL!@#",email11);
+        count=0;
         FirebaseDatabase.getInstance().getReference().child("Users")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -523,12 +538,13 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                             //System.out.println(user.email);
                             Log.v("EmailFound",user.email);
                             Log.v("tokenFound",user.token);
-                            Log.v("email1",userEmails.getEmail1());
-                            if(user.email.equals(email1)||user.email.equals(email2)||user.email.equals(email3)||user.email.equals(email4)||user.email.equals(email5)){
+                            Log.v("email1",sharedPref.getString("Email1",null));
+                            if(user.email.equals(sharedPref.getString("Email1",null))||user.email.equals(sharedPref.getString("Email2",null))||user.email.equals(sharedPref.getString("Email3",null))||user.email.equals(sharedPref.getString("Email4",null))||user.email.equals(sharedPref.getString("Email5",null))){
                                 Log.v("email","matched");
                                 if(count==0) {
                                     mRef.child("Users").child(userId).child("token1").setValue(user.token);
                                     count++;
+                                    Log.v("tokenLAUDA",user.token);
                                 }
                                 else if(count==1) {
                                     mRef.child("Users").child(userId).child("token2").setValue(user.token);
@@ -553,7 +569,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                     public void onCancelled(DatabaseError databaseError) {
                         Log.v("Error","Error");
                     }
-                });*/
+                });
 
         mRef.child("Users").child(userId).child("latitude").setValue(latitude);
         mRef.child("Users").child(userId).child("longitude").setValue(longitude);
@@ -566,6 +582,28 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.container,signupFrag);
         fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public void stopTrack() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+        mService.stopForeground(true);
+        mService.removeLocationUpdates();
+        mService.stopSelf();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container,trackMeFrag)
+                // .addToBackStack(null)
+                .commit();
+
+    }
+
+    @Override
+    public void displayProfile() {
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container,profileFrag)
+                .addToBackStack(null)
+                .commit();
 
     }
 }
