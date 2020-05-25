@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements signup.signUpList
                         else {
                             progressBar.setVisibility(View.GONE);
                             Toast.makeText(MainActivity.this, "Check E-mail and Password", Toast.LENGTH_SHORT).show();
+                            Log.i("hello", task.getException().toString());
                         }
                     }
                     else

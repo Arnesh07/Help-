@@ -29,24 +29,17 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCohxoAJzklyqRAOR6KWYPc4LwUmcBvWGA"
+          "current_key": "AIzaSyCOA8VJ2b8t9EJ_xNmzReeYb0gsdTiNCLU"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "34019324147-0obip6p9o3hhdflhhhv4ner1tch1s82i.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
